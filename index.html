@@ -486,15 +486,14 @@ function sendFile(e) {
 }
 // Start audio call
 function startAudioCall() {
-  const room = `chat-app-${userName}`;
-  window.open(`audioCall.html?room=${room}`, '_blank');
+  window.location.href = `audioCall.html?room=chat-app-kamrul`;
 }
 
 // Start video call
 function startVideoCall() {
-  const room = `chat-app-${userName}`;
-  window.open(`videoCall.html?room=${room}`, '_blank');
-    }
+  window.location.href = `videoCall.html?room=chat-app-kamrul`;
+}
+
 
 
 // Start the app if name already saved
