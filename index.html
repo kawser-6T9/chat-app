@@ -211,10 +211,30 @@
     #replyPreview span {
       font-weight: 600;
     }
+    .call-msg {
+  background: #e0f7fa;
+  padding: 10px;
+  border: 1px solid #00acc1;
+  border-radius: 5px;
+  text-align: center;
+  margin: 10px;
+  font-family: sans-serif;
+}
+
+.call-msg button {
+  margin: 5px;
+  padding: 5px 10px;
+  background: #00acc1;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
 
   </style>
 </head>
 <body>
+  <div id="call-banner"></div>
 
   <!-- Name input modal -->
   <div id="nameModal">
@@ -292,6 +312,23 @@
       nameModal.style.display = "none";
       subscribeMessages();
     }
+    function startVideoCall(username) {
+  const room = "call-" + username + "-" + Date.now();
+  firebase.database().ref("activeCall").set({
+    type: "video",
+    from: username,
+    room: room,
+    active: true
+  });
+  window.location.href = `videoCall.html?room=${room}`;
+    }
+    
+firebase.database().ref("activeCall").on("value", (snap) => {
+  const data = snap.val();
+  if (data && data.active) {
+    showCallBanner(data.from, data.type, data.room);
+  }
+});
 
     // Subscribe to Firestore messages realtime updates
     function subscribeMessages() {
@@ -493,9 +530,23 @@ function startAudioCall() {
 function startVideoCall() {
   window.location.href = `videoCall.html?room=chat-app-kamrul`;
 }
-
-
-
+function showCallBanner(from, type, room) {
+  document.getElementById("call-banner").innerHTML = `
+    <div class="call-msg">
+      📞 from{type === 'video' ? 'ভিডিও' : 'অডিও'} কল শুরু করেছেন।<br/>
+      <button onclick="joinCall('${room}')">জয়েন করুন</button>
+      <button onclick="cancelCall()">ক্যান্সেল</button>
+    </div>
+  `;
+}
+    
+firebase.database().ref("activeCall").on("value", (snap) => {
+  const data = snap.val();
+  if (data && data.active) {
+    showCallBanner(data.from, data.type, data.room);
+  } else {document.getElementById("call-banner").innerHTML = ""; // হাইড
+  }
+});
 // Start the app if name already saved
 if (userName) {
   nameModal.style.display = "none";
