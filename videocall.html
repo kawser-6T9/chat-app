@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Call</title>
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; background: #000; }
+    iframe { width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomName = urlParams.get("room") || "FD-VideoRoom";
+    const jitsiURL = `https://meet.jit.si/${roomName}`;document.write(`<iframe
+  src="${jitsiURL}"
+  allow="camera; microphone; fullscreen; display-capture"
+></iframe>`);
+
+  </script>
+</body>
+</html>
