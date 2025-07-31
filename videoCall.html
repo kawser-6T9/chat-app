@@ -18,8 +18,11 @@
 </head>
 <body>
   <iframe
-    src="https://chat-app-kamrul.daily.co/chat-app-kamrul?cam=1&mic=1"
-    allow="camera; microphone; fullscreen; speaker; display-capture">
-  </iframe>
+    id="call-frame"
+    allow="camera; microphone; fullscreen; display-capture">
+  </iframe>const params = new URLSearchParams(window.location.search);
+    const room = params.get("room");
+    document.getElementById("call-frame").src = `https://meet.jit.si/{room}`;
+  </script>
 </body>
 </html>
