@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat - DekheNao</title>
+</head>
+<body>
+  <h3>Chat with <span id="title"></span></h3>
+  <div id="chatBox" style="height:300px;overflow-y:scroll;border:1px solid #ccc;padding:10px;"></div>
+  <input id="msg" placeholder="Type a message">
+  <button onclick="sendMsg()">Send</button>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
+      authDomain: "chat-app-62f68.firebaseapp.com",
+      databaseURL: "https://chat-app-62f68-default-rtdb.firebaseio.com",
+      projectId: "chat-app-62f68"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const myPhone = localStorage.getItem("myPhone");
+    const myName = localStorage.getItem("myName");
+    const chatWith = localStorage.getItem("chatWith");
+const chatWithName = localStorage.getItem("chatWithName");
+
+    document.getElementById("title").innerText = chatWithName;
+
+    const chatID = [myPhone, chatWith].sort().join("_");
+    const chatRef = firebase.database().ref("chats/" + chatID);
+
+    chatRef.on("value", (snap) => {
+      const data = snap.val();
+      let html = "";
+      for (let k in data) {
+        html += `<div><b>data[k].sender:</b>{data[k].text}</div>`;
+      }
+      document.getElementById("chatBox").innerHTML = html;
+    });
+
+    function sendMsg() {
+      const msg = document.getElementById("msg").value;
+      if (msg) {
+        chatRef.push({ sender: myName, text: msg });
+        document.getElementById("msg").value = "";
+      }
+    }
+  </script>
+</body>
+</html>
