@@ -1,4 +1,3 @@
-
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -17,67 +16,92 @@
     }
     .accept { background: green; color: white; }
     .reject { background: red; color: white; }
-    #status { margin: 10px; font-size: 16px; }
+    #status { margin: 10px; font-size: 16px; text-align: center; }
   </style>
 </head>
 <body>
-  <h2 id="status">Connecting...</h2>
+  <h2 id="status">Preparing Call...</h2>
   <video id="localVideo" autoplay muted playsinline></video>
   <video id="remoteVideo" autoplay playsinline></video>  <div id="buttons">
-    <button class="accept" onclick="startCall()">Accept</button>
+    <button class="accept" onclick="acceptCall()">Accept</button>
     <button class="reject" onclick="endCall()">Reject</button>
   </div><audio id="ringtone" src="assets/ringtone.mp3" loop></audio>
 
-  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>  <script>
-    const peer = new Peer();
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
+      authDomain: "chat-app-62f68.firebaseapp.com",
+      projectId: "chat-app-62f68",
+      storageBucket: "chat-app-62f68.firebasestorage.app",
+      messagingSenderId: "887562025936",
+      appId: "1:887562025936:web:4846398f3764deda86d7d5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const ringtone = document.getElementById("ringtone");
     const localVideo = document.getElementById("localVideo");
     const remoteVideo = document.getElementById("remoteVideo");
-    const status = document.getElementById("status");
-    let localStream;
-    let currentCall;
+    const statusText = document.getElementById("status");
+    const peer = new Peer();
+    let currentCall = null;
+    let localStream = null;
+    let isReceiver = false;
+    let callerId = "";
 
     peer.on("open", id => {
-      status.innerText = `Your Call ID: ${id}`;
-      ringtone.play();
+      db.collection("calls").orderBy("timestamp", "desc").limit(1).get()
+        .then(snapshot => {
+          const doc = snapshot.docs[0];
+          if (!doc) {
+            statusText.innerText = "No call found.";
+            return;
+          }
+          const callData = doc.data();
+          if (callData.caller === localStorage.getItem("fdUser")) {
+            // Caller: Initiate call (no ringtone)
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+              localStream = stream;
+              localVideo.srcObject = stream;
+              const call = peer.call("receiver-id", stream); // Replace with actual logic
+              call.on("stream", remoteStream => {
+                remoteVideo.srcObject = remoteStream;
+              });
+              currentCall = call;
+              statusText.innerText = "Calling...";
+            });
+          } else {
+            // Receiver: Play ringtone and wait for accept
+            isReceiver = true;
+            ringtone.play();
+            callerId = callData.caller;
+            statusText.innerText = `${callerId} is calling you...`;
+          }
+        });
     });
 
-    peer.on("call", call => {
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-          localStream = stream;
-          localVideo.srcObject = stream;
+    function acceptCall() {
+      if (!isReceiver) return;
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+        localStream = stream;
+        localVideo.srcObject = stream;
+        peer.on("call", call => {
           call.answer(stream);
           call.on("stream", remoteStream => {
             remoteVideo.srcObject = remoteStream;
-            ringtone.pause();
           });
           currentCall = call;
+          ringtone.pause();
+          statusText.innerText = "Call Connected";
         });
-    });
-
-    function startCall() {
-      const remoteId = prompt("Enter friend's Call ID:");
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-          localStream = stream;
-          localVideo.srcObject = stream;
-          const call = peer.call(remoteId, stream);
-          call.on("stream", remoteStream => {
-            remoteVideo.srcObject = remoteStream;
-            ringtone.pause();
-          });
-          currentCall = call;
-        });
+      });
     }
 
     function endCall() {
       if (currentCall) currentCall.close();
       if (localStream) localStream.getTracks().forEach(track => track.stop());
-      remoteVideo.srcObject = null;
-      localVideo.srcObject = null;
-      status.innerText = "Call Ended";
       ringtone.pause();
+      window.location.href = "index.html";
     }
   </script></body>
 </html>
