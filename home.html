@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users - DekheNao Chat</title>
+</head>
+<body>
+  <h2>Active Users</h2>
+  <div id="userList"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
+      authDomain: "chat-app-62f68.firebaseapp.com",
+      databaseURL: "https://chat-app-62f68-default-rtdb.firebaseio.com",
+      projectId: "chat-app-62f68"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const myPhone = localStorage.getItem("myPhone");
+    firebase.database().ref("users").on("value", (snap) => {
+      const data = snap.val();
+      let html = "";
+      for (let phone in data) {
+        if (phone !== myPhone) {
+          html += `<div onclick="startChat('phone', '{data[phone].name}')">
+                    data[phone].name ({phone})
+                   </div><hr>`;
+        }
+      }
+document.getElementById("userList").innerHTML = html;
+    });
+
+    function startChat(phone, name) {
+      localStorage.setItem("chatWith", phone);
+      localStorage.setItem("chatWithName", name);
+      window.location.href = "chat.html";
+    }
+  </script>
+</body>
+</html>
