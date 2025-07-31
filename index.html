@@ -485,15 +485,7 @@ function sendFile(e) {
   e.target.value = ""; // reset input
 }
 
-// Start audio call
-function startAudioCall() {
-  window.location.href = `audioCall.html?room=FD-${userName}`;
-}
 
-// Start video call
-function startVideoCall() {
-  window.location.href = `videoCall.html?room=FD-${userName}`;
-}
 
 // Start the app if name already saved
 if (userName) {
