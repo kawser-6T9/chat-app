@@ -2,172 +2,266 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FD Group Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Group Chat FD</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* Reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #e5e5e5;
-      display: flex;
-      flex-direction: column;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
       height: 100vh;
-    }
-    .header {
-      background: #007bff;
-      color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 18px;
-    }
-    .chat-box {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
       display: flex;
       flex-direction: column;
+      color: #222;
     }
+
+    /* Header */
+    header {
+      background: #2f80ed;
+      padding: 16px 20px;
+      color: white;
+      font-weight: 700;
+      font-size: 20px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgb(47 128 237 / 0.4);
+      flex-shrink: 0;
+    }
+
+    /* Chat container */
+    #chatBox {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-color: #e5e5e5;
+    }
+
+    /* Message bubble */
     .msg {
       max-width: 80%;
-      padding: 10px 15px;
-      margin: 6px 0;
-      border-radius: 15px;
+      padding: 12px 18px;
+      border-radius: 20px;
       position: relative;
       font-size: 15px;
+      line-height: 1.4;
+      box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+      word-break: break-word;
     }
-    .msg .name {
-      font-weight: bold;
-      font-size: 13px;
-      margin-bottom: 3px;
-      color: #555;
-    }
-    .me {
+
+    /* Sender types */
+    .msg.me {
       align-self: flex-end;
-      background: #d1ffc4;
-      border-bottom-right-radius: 0;
+      background-color: #97f7a7;
+      border-bottom-right-radius: 3px;
+      color: #1a1a1a;
     }
-    .other {
+    .msg.other {
       align-self: flex-start;
-      background: #fff;
-      border-bottom-left-radius: 0;
+      background-color: #fff;
+      border-bottom-left-radius: 3px;
+      color: #222;
     }
+
+    /* Name label */
+    .msg .name {
+      font-weight: 700;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+
+    /* Input area */
     .input-area {
       display: flex;
-      padding: 10px;
+      padding: 12px 15px;
       background: white;
+      gap: 10px;
+      flex-shrink: 0;
+      border-top: 1px solid #ddd;
     }
-    input[type="text"] {
+    .input-area input[type="text"] {
       flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
       border-radius: 25px;
-      font-size: 15px;
+      border: 1px solid #ccc;
+      padding: 10px 15px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s ease;
     }
-    button {
-      background: #007bff;
-      color: white;
+    .input-area input[type="text"]:focus {
+      border-color: #2f80ed;
+      box-shadow: 0 0 5px #2f80edaa;
+    }
+    .input-area button {
+      background: #2f80ed;
       border: none;
-      margin-left: 10px;
+      color: white;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 18px;
       cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
     }
-    .popup {
+    .input-area button:hover {
+      background-color: #1c5fc4;
+    }
+
+    /* Name popup */
+    #namePopup {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
+      inset: 0;
+      background: rgba(0,0,0,0.65);
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 10;
     }
-    .popup-content {
+    #namePopup .popup-content {
       background: white;
-      padding: 25px;
       border-radius: 12px;
+      padding: 25px 30px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 12px rgb(0 0 0 / 0.2);
       text-align: center;
     }
-    .popup-content input {
-      padding: 10px;
+    #namePopup .popup-content h2 {
+      font-weight: 700;
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #2f80ed;
+    }
+    #namePopup .popup-content input {
       width: 100%;
-      margin-top: 10px;
+      padding: 12px 15px;
+      font-size: 18px;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s ease;
     }
-    .popup-content button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      border-radius: 5px;
+    #namePopup .popup-content input:focus {
+      border-color: #2f80ed;
+      box-shadow: 0 0 5px #2f80edaa;
     }
+    #namePopup .popup-content button {
+      margin-top: 18px;
+      background: #2f80ed;
+      border: none;
+      padding: 12px 25px;
+      color: white;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+    #namePopup .popup-content button:hover {
+      background-color: #1c5fc4;
+    }
+
   </style>
 </head>
 <body>
 
-  <div class="popup" id="namePopup">
+  <div id="namePopup">
     <div class="popup-content">
       <h2>তোমার নাম লিখো</h2>
       <input type="text" id="usernameInput" placeholder="উদাহরণ: Ami, FD, Rahim..." />
-      <button onclick="startChat()">Start</button>
+      <button id="startBtn">চ্যাট শুরু করো</button>
     </div>
   </div>
 
-  <div class="header" id="chatHeader">Group Chat</div>
-  <div class="chat-box" id="chatBox">
-    <!-- Messages appear here -->
-  </div>
+  <header id="chatHeader">গ্রুপ চ্যাট</header>
+
+  <main id="chatBox" aria-live="polite" aria-relevant="additions">
+    <!-- মেসেজ আসবে এখানে -->
+  </main>
+
   <div class="input-area">
-    <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." />
-    <button onclick="sendMessage()">➤</button>
+    <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." autocomplete="off" />
+    <button id="sendBtn" aria-label="Send Message">➤</button>
   </div>
 
   <script>
+    const namePopup = document.getElementById("namePopup");
+    const usernameInput = document.getElementById("usernameInput");
+    const startBtn = document.getElementById("startBtn");
+    const chatHeader = document.getElementById("chatHeader");
+    const chatBox = document.getElementById("chatBox");
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+
     let userName = "";
 
-    function startChat() {
-      const input = document.getElementById("usernameInput").value.trim();
-      if (input) {
-        userName = input;
-        document.getElementById("namePopup").style.display = "none";
-        document.getElementById("chatHeader").innerText = `Welcome, ${userName}`;
+    // নাম সেট করে চ্যাট শুরু
+    startBtn.onclick = () => {
+      const val = usernameInput.value.trim();
+      if(val.length < 2) {
+        alert("দয়া করে তোমার নাম কমপক্ষে ২ অক্ষর লিখো");
+        usernameInput.focus();
+        return;
       }
-    }
+      userName = val;
+      chatHeader.textContent = `গ্রুপ চ্যাট - ${userName}`;
+      namePopup.style.display = "none";
+      messageInput.focus();
+
+      // প্রাথমিক স্বাগতম মেসেজ
+      addMessage("সিস্টেম", `${userName} চ্যাটে যোগদান করেছে`, "other");
+    };
+
+    // মেসেজ সেন্ড
+    sendBtn.onclick = sendMessage;
+    messageInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") {
+        sendMessage();
+      }
+    });
 
     function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const msg = input.value.trim();
-      if (msg !== "") {
-        addMessage(userName, msg, "me");
-        input.value = "";
+      const text = messageInput.value.trim();
+      if(text === "") return;
+      addMessage(userName, text, "me");
+      messageInput.value = "";
 
-        // Simulated reply from FD
-        if (userName !== "FD") {
-          setTimeout(() => {
-            addMessage("FD", "ধন্যবাদ! আমি পেয়ে গেছি।", "other");
-          }, 1000);
-        }
+      // Auto reply demo (FD থেকে)
+      if(userName.toLowerCase() !== "fd") {
+        setTimeout(() => {
+          addMessage("FD", "ধন্যবাদ! আমি পেয়ে গেছি।", "other");
+        }, 1100);
       }
     }
 
+    // মেসেজ যোগ করার ফাংশন
     function addMessage(sender, text, type) {
-      const chatBox = document.getElementById("chatBox");
-      const msgDiv = document.createElement("div");
-      msgDiv.className = `msg ${type}`;
-
+      const msg = document.createElement("div");
+      msg.classList.add("msg", type);
+      
       const nameDiv = document.createElement("div");
       nameDiv.className = "name";
       nameDiv.textContent = sender;
+      msg.appendChild(nameDiv);
 
       const textDiv = document.createElement("div");
       textDiv.textContent = text;
+      msg.appendChild(textDiv);
 
-      msgDiv.appendChild(nameDiv);
-      msgDiv.appendChild(textDiv);
-      chatBox.appendChild(msgDiv);
+      chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
+
   </script>
+
 </body>
 </html>
