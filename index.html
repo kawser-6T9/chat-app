@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FD & Ami Chat</title>
+  <title>FD Group Chat</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f0f2f5;
+      background: #e5e5e5;
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
     .header {
-      background-color: #007bff;
+      background: #007bff;
       color: white;
-      padding: 15px;
       text-align: center;
+      padding: 15px;
       font-size: 18px;
     }
     .chat-box {
@@ -29,16 +29,21 @@
     }
     .msg {
       max-width: 80%;
-      margin: 5px 0;
-      padding: 10px;
+      padding: 10px 15px;
+      margin: 6px 0;
       border-radius: 15px;
-      font-size: 14px;
-      line-height: 1.4;
-      word-wrap: break-word;
+      position: relative;
+      font-size: 15px;
+    }
+    .msg .name {
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 3px;
+      color: #555;
     }
     .me {
       align-self: flex-end;
-      background: #dcf8c6;
+      background: #d1ffc4;
       border-bottom-right-radius: 0;
     }
     .other {
@@ -49,27 +54,26 @@
     .input-area {
       display: flex;
       padding: 10px;
-      background: #fff;
+      background: white;
     }
     input[type="text"] {
       flex: 1;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 25px;
-      font-size: 16px;
+      font-size: 15px;
     }
     button {
       background: #007bff;
       color: white;
       border: none;
-      padding: 0 15px;
       margin-left: 10px;
       border-radius: 50%;
+      width: 40px;
+      height: 40px;
       font-size: 18px;
       cursor: pointer;
     }
-
-    /* Popup CSS */
     .popup {
       position: fixed;
       top: 0; left: 0;
@@ -81,8 +85,8 @@
     }
     .popup-content {
       background: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 25px;
+      border-radius: 12px;
       text-align: center;
     }
     .popup-content input {
@@ -105,49 +109,62 @@
   <div class="popup" id="namePopup">
     <div class="popup-content">
       <h2>তোমার নাম লিখো</h2>
-      <input type="text" id="usernameInput" placeholder="উদাহরণ: Ami" />
+      <input type="text" id="usernameInput" placeholder="উদাহরণ: Ami, FD, Rahim..." />
       <button onclick="startChat()">Start</button>
     </div>
   </div>
 
-  <div class="header" id="chatHeader">FD & Ami Chat</div>
+  <div class="header" id="chatHeader">Group Chat</div>
   <div class="chat-box" id="chatBox">
-    <!-- Messages will appear here -->
+    <!-- Messages appear here -->
   </div>
   <div class="input-area">
-    <input type="text" id="messageInput" placeholder="Write a message..." />
+    <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." />
     <button onclick="sendMessage()">➤</button>
   </div>
 
   <script>
     let userName = "";
+
     function startChat() {
       const input = document.getElementById("usernameInput").value.trim();
       if (input) {
         userName = input;
         document.getElementById("namePopup").style.display = "none";
-        document.getElementById("chatHeader").innerText = `FD & ${userName} Chat`;
+        document.getElementById("chatHeader").innerText = `Welcome, ${userName}`;
       }
     }
 
     function sendMessage() {
       const input = document.getElementById("messageInput");
       const msg = input.value.trim();
-      if (msg) {
-        addMessage(msg, "me");
-        // Simulate reply from FD
-        setTimeout(() => {
-          addMessage("বুঝলাম! বলো আর কি করতে পারি?", "other");
-        }, 1000);
+      if (msg !== "") {
+        addMessage(userName, msg, "me");
+        input.value = "";
+
+        // Simulated reply from FD
+        if (userName !== "FD") {
+          setTimeout(() => {
+            addMessage("FD", "ধন্যবাদ! আমি পেয়ে গেছি।", "other");
+          }, 1000);
+        }
       }
-      input.value = "";
     }
 
-    function addMessage(text, sender) {
+    function addMessage(sender, text, type) {
       const chatBox = document.getElementById("chatBox");
       const msgDiv = document.createElement("div");
-      msgDiv.className = `msg ${sender}`;
-      msgDiv.innerText = text;
+      msgDiv.className = `msg ${type}`;
+
+      const nameDiv = document.createElement("div");
+      nameDiv.className = "name";
+      nameDiv.textContent = sender;
+
+      const textDiv = document.createElement("div");
+      textDiv.textContent = text;
+
+      msgDiv.appendChild(nameDiv);
+      msgDiv.appendChild(textDiv);
       chatBox.appendChild(msgDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
