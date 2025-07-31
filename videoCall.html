@@ -1,29 +1,25 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Video Call - Kamrul Chat App</title>
+  <title>Video Call</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body, html {
-      margin: 0; padding: 0;
-      height: 100%; width: 100%;
-      background: #000;
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
     }
     iframe {
-      border: none;
       width: 100%;
       height: 100%;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const room = urlParams.get("room") || "kamrul-chat";
-    const videoURL = `https://chat-app-kamrul.daily.co/${room}`;
-
-    document.write(`<iframe src="${videoURL}" allow="microphone; camera; fullscreen" allowfullscreen></iframe>`);
-  </script>
+  <iframe
+    src="https://chat-app-kamrul.daily.co/chat-app-kamrul?cam=1&mic=1"
+    allow="camera; microphone; fullscreen; speaker; display-capture">
+  </iframe>
 </body>
 </html>
