@@ -3,265 +3,208 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Group Chat FD</title>
+  <title>FD Group Chat</title>
   <style>
-    /* Reset */
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
+    /* মোবাইল ফার্স্ট UI ডিজাইন */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
       height: 100vh;
       display: flex;
       flex-direction: column;
-      color: #222;
     }
-
-    /* Header */
     header {
       background: #2f80ed;
-      padding: 16px 20px;
+      padding: 16px;
       color: white;
-      font-weight: 700;
-      font-size: 20px;
       text-align: center;
-      box-shadow: 0 2px 6px rgb(47 128 237 / 0.4);
-      flex-shrink: 0;
+      font-size: 18px;
+      font-weight: bold;
     }
-
-    /* Chat container */
     #chatBox {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 15px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      background-color: #e5e5e5;
     }
-
-    /* Message bubble */
     .msg {
       max-width: 80%;
-      padding: 12px 18px;
-      border-radius: 20px;
-      position: relative;
+      padding: 10px 15px;
+      border-radius: 16px;
       font-size: 15px;
-      line-height: 1.4;
-      box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
-      word-break: break-word;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
-
-    /* Sender types */
     .msg.me {
       align-self: flex-end;
-      background-color: #97f7a7;
-      border-bottom-right-radius: 3px;
-      color: #1a1a1a;
+      background-color: #d2f8d2;
+      border-bottom-right-radius: 0;
     }
     .msg.other {
       align-self: flex-start;
       background-color: #fff;
-      border-bottom-left-radius: 3px;
-      color: #222;
+      border-bottom-left-radius: 0;
     }
-
-    /* Name label */
-    .msg .name {
-      font-weight: 700;
+    .name {
+      font-weight: bold;
       font-size: 13px;
+      margin-bottom: 4px;
       color: #555;
-      margin-bottom: 6px;
-      user-select: none;
     }
-
-    /* Input area */
     .input-area {
       display: flex;
-      padding: 12px 15px;
-      background: white;
-      gap: 10px;
-      flex-shrink: 0;
+      padding: 10px;
+      background: #fff;
       border-top: 1px solid #ddd;
     }
-    .input-area input[type="text"] {
+    input[type="text"] {
       flex: 1;
+      padding: 10px 15px;
       border-radius: 25px;
       border: 1px solid #ccc;
-      padding: 10px 15px;
       font-size: 16px;
-      outline: none;
-      transition: border-color 0.2s ease;
     }
-    .input-area input[type="text"]:focus {
-      border-color: #2f80ed;
-      box-shadow: 0 0 5px #2f80edaa;
-    }
-    .input-area button {
-      background: #2f80ed;
+    button {
+      margin-left: 10px;
       border: none;
+      background: #2f80ed;
       color: white;
+      font-size: 18px;
+      border-radius: 50%;
       width: 45px;
       height: 45px;
-      border-radius: 50%;
       cursor: pointer;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color 0.3s ease;
     }
-    .input-area button:hover {
-      background-color: #1c5fc4;
-    }
-
-    /* Name popup */
     #namePopup {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.65);
+      background: rgba(0,0,0,0.6);
       display: flex;
-      justify-content: center;
       align-items: center;
-      z-index: 10;
+      justify-content: center;
     }
-    #namePopup .popup-content {
+    .popup-content {
       background: white;
+      padding: 20px;
       border-radius: 12px;
-      padding: 25px 30px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 0 12px rgb(0 0 0 / 0.2);
       text-align: center;
     }
-    #namePopup .popup-content h2 {
-      font-weight: 700;
-      font-size: 24px;
-      margin-bottom: 15px;
-      color: #2f80ed;
-    }
-    #namePopup .popup-content input {
+    .popup-content input {
       width: 100%;
-      padding: 12px 15px;
-      font-size: 18px;
-      border-radius: 10px;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
       border: 1px solid #ccc;
-      outline: none;
-      transition: border-color 0.2s ease;
     }
-    #namePopup .popup-content input:focus {
-      border-color: #2f80ed;
-      box-shadow: 0 0 5px #2f80edaa;
-    }
-    #namePopup .popup-content button {
-      margin-top: 18px;
+    .popup-content button {
+      margin-top: 15px;
+      padding: 10px 20px;
       background: #2f80ed;
-      border: none;
-      padding: 12px 25px;
       color: white;
-      font-size: 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
     }
-    #namePopup .popup-content button:hover {
-      background-color: #1c5fc4;
-    }
-
   </style>
 </head>
 <body>
 
-  <div id="namePopup">
-    <div class="popup-content">
-      <h2>তোমার নাম লিখো</h2>
-      <input type="text" id="usernameInput" placeholder="উদাহরণ: Ami, FD, Rahim..." />
-      <button id="startBtn">চ্যাট শুরু করো</button>
-    </div>
+<!-- নাম ইনপুট -->
+<div id="namePopup">
+  <div class="popup-content">
+    <h2>তোমার নাম লিখো</h2>
+    <input type="text" id="usernameInput" placeholder="উদাহরণ: Ami, FD, Rahim..." />
+    <button onclick="startChat()">চ্যাট শুরু করো</button>
   </div>
+</div>
 
-  <header id="chatHeader">গ্রুপ চ্যাট</header>
+<header id="chatHeader">FD Group Chat</header>
 
-  <main id="chatBox" aria-live="polite" aria-relevant="additions">
-    <!-- মেসেজ আসবে এখানে -->
-  </main>
+<main id="chatBox"></main>
 
-  <div class="input-area">
-    <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." autocomplete="off" />
-    <button id="sendBtn" aria-label="Send Message">➤</button>
-  </div>
+<div class="input-area">
+  <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." />
+  <button onclick="sendMessage()">➤</button>
+</div>
 
-  <script>
-    const namePopup = document.getElementById("namePopup");
-    const usernameInput = document.getElementById("usernameInput");
-    const startBtn = document.getElementById("startBtn");
-    const chatHeader = document.getElementById("chatHeader");
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-    let userName = "";
+<script>
+  // তোমার কনফিগ
+  const firebaseConfig = {
+    apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
+    authDomain: "chat-app-62f68.firebaseapp.com",
+    projectId: "chat-app-62f68",
+    storageBucket: "chat-app-62f68.firebasestorage.app",
+    messagingSenderId: "887562025936",
+    appId: "1:887562025936:web:4846398f3764deda86d7d5"
+  };
 
-    // নাম সেট করে চ্যাট শুরু
-    startBtn.onclick = () => {
-      const val = usernameInput.value.trim();
-      if(val.length < 2) {
-        alert("দয়া করে তোমার নাম কমপক্ষে ২ অক্ষর লিখো");
-        usernameInput.focus();
-        return;
-      }
-      userName = val;
-      chatHeader.textContent = `গ্রুপ চ্যাট - ${userName}`;
-      namePopup.style.display = "none";
-      messageInput.focus();
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-      // প্রাথমিক স্বাগতম মেসেজ
-      addMessage("সিস্টেম", `${userName} চ্যাটে যোগদান করেছে`, "other");
-    };
+  const namePopup = document.getElementById("namePopup");
+  const usernameInput = document.getElementById("usernameInput");
+  const messageInput = document.getElementById("messageInput");
+  const chatBox = document.getElementById("chatBox");
 
-    // মেসেজ সেন্ড
-    sendBtn.onclick = sendMessage;
-    messageInput.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") {
-        sendMessage();
-      }
+  let userName = "";
+
+  function startChat() {
+    const val = usernameInput.value.trim();
+    if (val.length < 2) {
+      alert("কমপক্ষে ২ অক্ষরের নাম দিতে হবে");
+      return;
+    }
+    userName = val;
+    namePopup.style.display = "none";
+    document.getElementById("chatHeader").innerText = `FD Group Chat - ${userName}`;
+  }
+
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text) return;
+
+    db.collection("messages").add({
+      sender: userName,
+      text: text,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    function sendMessage() {
-      const text = messageInput.value.trim();
-      if(text === "") return;
-      addMessage(userName, text, "me");
-      messageInput.value = "";
+    messageInput.value = "";
+  }
 
-      // Auto reply demo (FD থেকে)
-      if(userName.toLowerCase() !== "fd") {
-        setTimeout(() => {
-          addMessage("FD", "ধন্যবাদ! আমি পেয়ে গেছি।", "other");
-        }, 1100);
-      }
-    }
+  // Realtime Listener
+  db.collection("messages").orderBy("timestamp").onSnapshot(snapshot => {
+    chatBox.innerHTML = "";
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+      const type = msg.sender === userName ? "me" : "other";
+      addMessage(msg.sender, msg.text, type);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
 
-    // মেসেজ যোগ করার ফাংশন
-    function addMessage(sender, text, type) {
-      const msg = document.createElement("div");
-      msg.classList.add("msg", type);
-      
-      const nameDiv = document.createElement("div");
-      nameDiv.className = "name";
-      nameDiv.textContent = sender;
-      msg.appendChild(nameDiv);
-
-      const textDiv = document.createElement("div");
-      textDiv.textContent = text;
-      msg.appendChild(textDiv);
-
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-  </script>
+  function addMessage(sender, text, type) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `msg ${type}`;
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "name";
+    nameDiv.innerText = sender;
+    const textDiv = document.createElement("div");
+    textDiv.innerText = text;
+    msgDiv.appendChild(nameDiv);
+    msgDiv.appendChild(textDiv);
+    chatBox.appendChild(msgDiv);
+  }
+</script>
 
 </body>
 </html>
