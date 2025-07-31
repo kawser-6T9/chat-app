@@ -484,7 +484,17 @@ function sendFile(e) {
   reader.readAsDataURL(file);
   e.target.value = ""; // reset input
 }
+// Start audio call
+function startAudioCall() {
+  const room = `FD-${userName}`;
+  window.open(`audioCall.html?room=${room}`, '_blank');
+}
 
+// Start video call
+function startVideoCall() {
+  const room = `FD-${userName}`;
+  window.open(`videoCall.html?room=${room}`, '_blank');
+    }
 
 
 // Start the app if name already saved
