@@ -1,1 +1,83 @@
 
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FD Video/Audio Call</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    video { width: 90%; max-width: 400px; margin: 10px; background: black; }
+    #buttons { margin-top: 20px; display: flex; gap: 10px; }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .accept { background: green; color: white; }
+    .reject { background: red; color: white; }
+    #status { margin: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h2 id="status">Connecting...</h2>
+  <video id="localVideo" autoplay muted playsinline></video>
+  <video id="remoteVideo" autoplay playsinline></video>  <div id="buttons">
+    <button class="accept" onclick="startCall()">Accept</button>
+    <button class="reject" onclick="endCall()">Reject</button>
+  </div><audio id="ringtone" src="assets/ringtone.mp3" loop></audio>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>  <script>
+    const peer = new Peer();
+    const ringtone = document.getElementById("ringtone");
+    const localVideo = document.getElementById("localVideo");
+    const remoteVideo = document.getElementById("remoteVideo");
+    const status = document.getElementById("status");
+    let localStream;
+    let currentCall;
+
+    peer.on("open", id => {
+      status.innerText = `Your Call ID: ${id}`;
+      ringtone.play();
+    });
+
+    peer.on("call", call => {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+          localStream = stream;
+          localVideo.srcObject = stream;
+          call.answer(stream);
+          call.on("stream", remoteStream => {
+            remoteVideo.srcObject = remoteStream;
+            ringtone.pause();
+          });
+          currentCall = call;
+        });
+    });
+
+    function startCall() {
+      const remoteId = prompt("Enter friend's Call ID:");
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+          localStream = stream;
+          localVideo.srcObject = stream;
+          const call = peer.call(remoteId, stream);
+          call.on("stream", remoteStream => {
+            remoteVideo.srcObject = remoteStream;
+            ringtone.pause();
+          });
+          currentCall = call;
+        });
+    }
+
+    function endCall() {
+      if (currentCall) currentCall.close();
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      remoteVideo.srcObject = null;
+      localVideo.srcObject = null;
+      status.innerText = "Call Ended";
+      ringtone.pause();
+    }
+  </script></body>
+</html>
