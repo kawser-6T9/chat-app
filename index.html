@@ -1,216 +1,701 @@
-<!DOCTYPE html><html lang="bn">
+<!DOCTYPE html>
+<html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat App - Kamrul</title>
-  <style>
-    * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif;}
-    body {height: 100vh; background: #f0f2f5; display: flex; flex-direction: column;}
-    header {
-      background: #2d89ef; color: white; padding: 14px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .icons button, .icons label {
-      background: none; border: none; color: white; font-size: 20px; cursor: pointer;
-    }
-    #chatBox {
-      flex: 1; overflow-y: auto; padding: 10px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .msg {
-      padding: 10px 15px; border-radius: 12px; max-width: 80%; position: relative;
-      word-wrap: break-word; user-select: none;
-    }
-    .msg.me { background: #dcf8c6; align-self: flex-end; }
-    .msg.other { background: #fff; align-self: flex-start; border: 1px solid #ccc; }
-    .actions {
-      display: none; position: absolute; bottom: -25px; right: 10px; gap: 6px;
-    }
-    .msg:hover .actions { display: flex; }
-    .actions button {
-      font-size: 12px; background: #eee; border: none; border-radius: 4px;
-      cursor: pointer; padding: 2px 6px;
-    }
-    .input-area {
-      display: flex; padding: 10px; border-top: 1px solid #ccc; gap: 6px; align-items: center;
-    }
-    .input-area input[type="text"] {
-      flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; font-size: 14px;
-    }
-    .sendBtn {
-      background: #2d89ef; color: white; border: none; padding: 10px 16px;
-      border-radius: 20px; cursor: pointer;
-    }
-    .file-label { cursor: pointer; font-size: 20px; color: #555; }
-    #fileInput { display: none; }
-    #passwordModal, #nameModal {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 1000;
-    }
-    .modalBox {
-      background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 300px;
-      text-align: center;
-    }
-    .modalBox input, .modalBox button {
-      width: 100%; margin-top: 10px; padding: 10px; border-radius: 5px; border: 1px solid #ccc;
-      font-size: 15px;
-    }
-    .modalBox button {
-      background: #2d89ef; color: white; border: none;
-    }
-    #replyPreview {
-      background: #e3f2fd; padding: 6px 12px; margin: 5px;
-      border-left: 4px solid #2f80ed; display: none; color: #2f80ed;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>chat-app ©kamrul</title>
+<style>
+  /* ====== ইউনিক সুন্দর CSS ====== */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin:0; padding:0; height:100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #e9ebf0;
+    display: flex; flex-direction: column;
+  }
+  header {
+    background: #3b82f6;
+    color: white;
+    padding: 15px 20px;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select:none;
+  }
+  header .icons button, header .file-label {
+    font-size: 24px;
+    margin-left: 15px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  header .icons button:hover, header .file-label:hover {
+    color: #d1d5db;
+  }
+
+  #chatBox {
+    flex: 1;
+    background: white;
+    padding: 15px 20px 30px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 15px;
+    word-break: break-word;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+    position: relative;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  .msg.me {
+    background: #dcf8c6;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .msg.other {
+    background: #f1f0f0;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg .name {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #555;
+    user-select:none;
+  }
+  .msg .replyBox {
+    font-size: 13px;
+    color: #2563eb;
+    border-left: 3px solid #2563eb;
+    padding-left: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select:none;
+  }
+  .msg .replyBox:hover {
+    text-decoration: underline;
+  }
+  .msg a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+  .msg a:hover {
+    text-decoration: underline;
+  }
+
+  /* Input area */
+  .input-area {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    background: white;
+    border-top: 1px solid #ccc;
+  }
+  .input-area input[type=text] {
+    flex: 1;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    padding: 12px 20px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  .input-area input[type=text]:focus {
+    border-color: #3b82f6;
+  }
+  .input-area button.sendBtn {
+    background: #3b82f6;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 25px;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    user-select:none;
+    transition: background-color 0.3s ease;
+  }
+  .input-area button.sendBtn:hover {
+    background: #2563eb;
+  }
+
+  /* Hidden file input */
+  #fileInput {
+    display: none;
+  }
+  .file-label {
+    cursor: pointer;
+    user-select:none;
+  }
+
+  /* Name modal */
+  #nameModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  #nameModalBox {
+    background: white;
+    padding: 30px 25px;
+    border-radius: 15px;
+    max-width: 350px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 25px rgb(0 0 0 / 0.3);
+  }
+  #nameModalBox h2 {
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    font-size: 22px;
+  }
+  #nameModalBox input {
+    width: 100%;
+    font-size: 18px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  #nameModalBox input:focus {
+    border-color: #3b82f6;
+  }
+  #nameModalBox button {
+    margin-top: 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    user-select:none;
+    transition: background-color 0.3s ease;
+  }
+  #nameModalBox button:hover {
+    background: #2563eb;
+  }
+
+  /* Reply preview */
+  #replyPreview {
+    background: #bfdbfe;
+    border-left: 5px solid #2563eb;
+    padding: 10px 15px;
+    margin: 5px 20px 0 20px;
+    font-size: 14px;
+    color: #2563eb;
+    font-weight: 700;
+    user-select:none;
+    display: none;
+    position: relative;
+  }
+  #replyPreview span {
+    user-select:none;
+  }
+  #replyPreview button.clearReplyBtn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #2563eb;
+    cursor: pointer;
+    user-select:none;
+  }
+  #replyPreview button.clearReplyBtn:hover {
+    color: #1e40af;
+  }
+
+  /* Context menu for message actions */
+  #msgActionMenu {
+    position: absolute;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+    padding: 8px 12px;
+    display: none;
+    gap: 15px;
+    user-select:none;
+    z-index: 999;
+  }
+  #msgActionMenu button {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #2563eb;
+    transition: background-color 0.2s ease;
+  }
+  #msgActionMenu button:hover {
+    background: #2563eb;
+    color: white;
+  }
+
+  /* Typing indicator */
+  #typingIndicator {
+    font-size: 14px;
+    padding-left: 20px;
+    margin-bottom: 6px;
+    color: #555;
+    height: 20px;
+    user-select:none;
+  }
+</style>
 </head>
 <body>
-  <div id="passwordModal">
-    <div class="modalBox">
-      <h3>পাসওয়ার্ড দিন</h3>
-      <input type="password" id="passwordInput" placeholder="Password" />
-      <button onclick="verifyPassword()">Enter</button>
-    </div>
+
+<!-- Name modal -->
+<div id="nameModal">
+  <div id="nameModalBox">
+    <h2>নাম লিখুন এবং পাসওয়ার্ড দিন</h2>
+    <input type="text" id="nameInput" placeholder="আপনার নাম লিখুন" autocomplete="off" />
+    <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড দিন" autocomplete="off" style="margin-top:10px;" />
+    <button id="joinBtn">চ্যাটে জয়েন করুন</button>
   </div>
-  <div id="nameModal" style="display:none">
-    <div class="modalBox">
-      <h3>আপনার নাম লিখুন</h3>
-      <input type="text" id="nameInput" placeholder="তোমার নাম" />
-      <button onclick="saveName()">Join</button>
-    </div>
-  </div>  <header>
-    Chat App
-    <div class="icons">
-      <button onclick="startAudioCall()">📞</button>
-      <button onclick="startVideoCall()">📷</button>
-      <label class="file-label" for="fileInput">📎</label>
-      <input type="file" id="fileInput" onchange="sendFile(event)" />
-    </div>
-  </header>  <div id="chatBox"></div>
-  <div id="replyPreview"></div>
-  <div class="input-area">
-    <input type="text" id="messageInput" placeholder="Write message..." />
-    <button class="sendBtn" onclick="sendMessage()">Send</button>
-  </div><audio id="notifSound" src="assets/notification.mp3"></audio> <audio id="ringtone" src="assets/ringtone.mp3" loop></audio>
+</div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
-      authDomain: "chat-app-62f68.firebaseapp.com",
-      projectId: "chat-app-62f68",
-      storageBucket: "chat-app-62f68",
-      messagingSenderId: "887562025936",
-      appId: "1:887562025936:web:4846398f3764deda86d7d5"
+<header>
+  chat-app ©kamrul
+  <div class="icons">
+    <button title="অডিও কল" onclick="startAudioCall()">📞</button>
+    <button title="ভিডিও কল" onclick="startVideoCall()">📷</button>
+    <label for="fileInput" class="file-label" title="ফাইল পাঠান">📎</label>
+    <input type="file" id="fileInput" accept="*/*" />
+  </div>
+</header>
+
+<div id="chatBox"></div>
+<div id="typingIndicator"></div>
+
+<!-- Reply preview -->
+<div id="replyPreview">
+  <span></span>
+  <button class="clearReplyBtn" title="রিপ্লাই বাতিল করুন">✖</button>
+</div>
+
+<!-- Input -->
+<div class="input-area">
+  <input type="text" id="messageInput" placeholder="মেসেজ লিখুন..." autocomplete="off" />
+  <button class="sendBtn">Send</button>
+</div>
+
+<!-- Message actions menu -->
+<div id="msgActionMenu">
+  <button id="replyBtn">↩ Reply</button>
+  <button id="editBtn">✏️ Edit</button>
+  <button id="unsendBtn">🗑️ Unsend</button>
+</div>
+
+<!-- Sounds -->
+<audio id="notifSound" src="assets/notification.mp3" preload="auto"></audio>
+<audio id="ringtone" src="assets/ringtone.mp3" preload="auto" loop></audio>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
+    authDomain: "chat-app-62f68.firebaseapp.com",
+    projectId: "chat-app-62f68",
+    storageBucket: "chat-app-62f68",
+    messagingSenderId: "887562025936",
+    appId: "1:887562025936:web:4846398f3764deda86d7d5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const rdb = firebase.database();
+
+  // UI elements
+  const chatBox = document.getElementById('chatBox');
+  const messageInput = document.getElementById('messageInput');
+  const replyPreview = document.getElementById('replyPreview');
+  const replyPreviewText = replyPreview.querySelector('span');
+  const clearReplyBtn = document.querySelector('.clearReplyBtn');
+  const nameModal = document.getElementById('nameModal');
+  const nameInput = document.getElementById('nameInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const joinBtn = document.getElementById('joinBtn');
+  const notifSound = document.getElementById('notifSound');
+  const ringtone = document.getElementById('ringtone');
+  const typingIndicator = document.getElementById('typingIndicator');
+
+  const msgActionMenu = document.getElementById('msgActionMenu');
+  const replyBtn = document.getElementById('replyBtn');
+  const editBtn = document.getElementById('editBtn');
+  const unsendBtn = document.getElementById('unsendBtn');
+
+  // State
+  let userName = localStorage.getItem('fdUser') || null;
+  let editingMessageId = null;
+  let replyingToMessage = null;
+  let passwordEntered = false;
+
+  // Join Chat with password check
+  joinBtn.onclick = () => {
+    const nameVal = nameInput.value.trim();
+    const passVal = passwordInput.value.trim();
+    if(!nameVal) return alert('দয়া করে নাম লিখুন।');
+    if(passVal !== 'ks') return alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
+    userName = nameVal;
+    passwordEntered = true;
+    localStorage.setItem('fdUser', userName);
+    nameModal.style.display = 'none';
+    subscribeMessages();
+    sendTypingStatus(false);
+  };
+
+  // If already logged in, skip modal
+  if(userName){
+    nameModal.style.display = 'none';
+    subscribeMessages();
+    sendTypingStatus(false);
+  }
+
+  // Subscribe to messages realtime
+  function subscribeMessages(){
+    db.collection('messages').orderBy('time').onSnapshot(snapshot => {
+      chatBox.innerHTML = '';
+      snapshot.forEach(doc => {
+        appendMessage(doc.id, doc.data());
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  }
+
+  // Escape HTML
+  function escapeHTML(text){
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Append message to UI
+  function appendMessage(id, msg){
+    const isMe = msg.sender === userName;
+    const div = document.createElement('div');
+    div.className = 'msg ' + (isMe ? 'me' : 'other');
+    div.dataset.msgid = id;
+    div.dataset.sender = msg.sender;
+
+    // Reply preview box inside message
+    let replyHTML = '';
+    if(msg.replyTo){
+      const rtxt = msg.replyTo.text.length > 50 ? msg.replyTo.text.slice(0,50)+'...' : msg.replyTo.text;
+      replyHTML = `<div class="replyBox" data-replyid="${msg.replyTo.id}" data-replysender="${msg.replyTo.sender}">${escapeHTML(msg.replyTo.sender)}: ${escapeHTML(rtxt)}</div>`;
+    }
+
+    let messageText = '';
+    if(msg.type === 'file'){
+      // Show file link properly
+      messageText = `<a href="${msg.fileData}" download="${msg.fileName}">${escapeHTML(msg.fileName)}</a>`;
+    } else if (msg.type === 'image'){
+      messageText = `<img src="${msg.fileData}" alt="image" style="max-width: 200px; border-radius: 10px;" />`;
+    } else {
+      messageText = escapeHTML(msg.text);
+    }
+
+    div.innerHTML = `
+      <div class="name">${escapeHTML(msg.sender)}</div>
+      ${replyHTML}
+      <div class="messageText">${messageText}</div>
+    `;
+
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Play notification only if other user sent message
+    if(!isMe) notifSound.play();
+
+    // Attach long press event for action menu
+    setupMsgLongPress(div);
+
+    // Attach click on replyBox to scroll to original msg
+    const replyBoxes = div.querySelectorAll('.replyBox');
+    replyBoxes.forEach(rb => {
+      rb.onclick = e => {
+        e.stopPropagation();
+        scrollToMessage(rb.dataset.replyid);
+      }
+    });
+  }
+
+  // Scroll to message by id
+  function scrollToMessage(msgId){
+    const allMsgs = document.querySelectorAll('.msg');
+    for(const m of allMsgs){
+      if(m.dataset.msgid === msgId){
+        m.scrollIntoView({behavior:'smooth', block:'center'});
+        // optionally highlight
+        m.style.backgroundColor = '#e0f2fe';
+        setTimeout(() => m.style.backgroundColor = '', 1500);
+        break;
+      }
+    }
+  }
+
+  // Long press setup (1 second hold)
+  function setupMsgLongPress(msgDiv){
+    let pressTimer = null;
+
+    msgDiv.onpointerdown = (e) => {
+      e.preventDefault();
+      pressTimer = setTimeout(() => {
+        showMsgActionMenu(msgDiv, e.pageX, e.pageY);
+      }, 1000);
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    msgDiv.onpointerup = () => {
+      clearTimeout(pressTimer);
+    };
+    msgDiv.onpointerleave = () => {
+      clearTimeout(pressTimer);
+    };
+  }
 
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
-    const notifSound = document.getElementById("notifSound");
-    const replyPreview = document.getElementById("replyPreview");
-    let userName = localStorage.getItem("fdUser");
-    let editingId = null;
-    let replyingTo = null;
+  // Show message action menu near message
+  function showMsgActionMenu(msgDiv, x, y){
+    hideMsgActionMenu();
 
-    function verifyPassword() {
-      const input = document.getElementById("passwordInput").value;
-      if (input === "ks") {
-        document.getElementById("passwordModal").style.display = "none";
-        if (!userName) document.getElementById("nameModal").style.display = "flex";
-        else subscribeMessages();
-      } else {
-        alert("ভুল পাসওয়ার্ড");
+    // Set selected msg info
+    selectedMsgDiv = msgDiv;
+    const isMe = msgDiv.classList.contains('me');
+
+// Position menu above message horizontally centered
+    menu.style.top = (window.scrollY + rect.top - 50) + 'px';
+    // Center horizontally relative to message
+    menu.style.left = (window.scrollX + rect.left + rect.width/2 - menu.offsetWidth/2) + 'px';
+
+    // Show/hide buttons based on ownership
+    if(isMe){
+      replyBtn.style.display = 'inline-block';
+      editBtn.style.display = 'inline-block';
+      unsendBtn.style.display = 'inline-block';
+    } else {
+      replyBtn.style.display = 'inline-block';
+      editBtn.style.display = 'none';
+      unsendBtn.style.display = 'none';
+    }
+  }
+
+  // Hide menu
+  function hideMsgActionMenu(){
+    msgActionMenu.style.display = 'none';
+    selectedMsgDiv = null;
+  }
+
+  // Hide menu on clicking outside
+  document.addEventListener('click', e => {
+    if(!msgActionMenu.contains(e.target)){
+      hideMsgActionMenu();
+    }
+  });
+
+  // Variables for selected message for actions
+  let selectedMsgDiv = null;
+
+  // Reply button click
+  replyBtn.onclick = () => {
+    if(!selectedMsgDiv) return;
+    const msgId = selectedMsgDiv.dataset.msgid;
+    const sender = selectedMsgDiv.dataset.sender;
+    const msgTextElem = selectedMsgDiv.querySelector('.messageText');
+    let textPreview = msgTextElem ? msgTextElem.textContent : '';
+    if(textPreview.length > 50) textPreview = textPreview.slice(0,50) + '...';
+    replyingToMessage = {id: msgId, sender: sender, text: textPreview};
+    replyPreviewText.textContent = `Replying to ${sender}: ${textPreview}`;
+    replyPreview.style.display = 'block';
+    messageInput.focus();
+    hideMsgActionMenu();
+  };
+
+  // Clear reply preview
+  clearReplyBtn.onclick = () => {
+    replyingToMessage = null;
+    replyPreview.style.display = 'none';
+  };
+
+  // Edit button click
+  editBtn.onclick = () => {
+    if(!selectedMsgDiv) return;
+    editingMessageId = selectedMsgDiv.dataset.msgid;
+    const msgTextElem = selectedMsgDiv.querySelector('.messageText');
+    if(msgTextElem){
+      messageInput.value = msgTextElem.textContent;
+      messageInput.focus();
+    }
+    hideMsgActionMenu();
+  };
+
+  // Unsend button click
+  unsendBtn.onclick = async () => {
+    if(!selectedMsgDiv) return;
+    const msgId = selectedMsgDiv.dataset.msgid;
+    const confirmDel = confirm('আপনি কি মেসেজটি আনসেন্ড করতে চান?');
+    if(confirmDel){
+      try{
+        await db.collection('messages').doc(msgId).delete();
+      } catch(e) {
+        alert('ডিলিট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
       }
     }
+    hideMsgActionMenu();
+  };
 
-    function saveName() {
-      const name = document.getElementById("nameInput").value.trim();
-      if (!name) return alert("নাম দিন");
-      userName = name;
-      localStorage.setItem("fdUser", name);
-      document.getElementById("nameModal").style.display = "none";
-      subscribeMessages();
-    }
+  // Send message function
+  async function sendMessage(){
+    if(!userName) return;
+    let text = messageInput.value.trim();
+    if(!text && !pendingFile) return; // no empty messages unless file present
 
-    function subscribeMessages() {
-      db.collection("messages").orderBy("time").onSnapshot(snapshot => {
-        chatBox.innerHTML = "";
-        snapshot.forEach(doc => {
-          const msg = doc.data();
-          appendMessage(doc.id, msg);
+    // If editing
+    if(editingMessageId){
+      try {
+        await db.collection('messages').doc(editingMessageId).update({
+          text: text,
+          edited: true,
+          time: firebase.firestore.FieldValue.serverTimestamp()
         });
-        chatBox.scrollTop = chatBox.scrollHeight;
-      });
-    }
-
-    function appendMessage(id, msg) {
-      const div = document.createElement("div");
-      const isMe = msg.sender === userName;
-      div.className = `msg ${isMe ? "me" : "other"}`;
-      div.innerHTML = `<b>${msg.sender}</b><br/>${msg.text}`;
-
-      div.addEventListener("touchstart", () => {
-        div.pressTimer = setTimeout(() => showActions(id, msg), 1000);
-      });
-      div.addEventListener("touchend", () => clearTimeout(div.pressTimer));
-
-      chatBox.appendChild(div);
-      if (!isMe) notifSound.play();
-    }
-
-    function sendMessage() {
-      const text = messageInput.value.trim();
-      if (!text) return;
-      const data = {
-        sender: userName,
-        text: text,
-        time: Date.now()
-      };
-      if (editingId) {
-        db.collection("messages").doc(editingId).update(data);
-        editingId = null;
-      } else {
-        db.collection("messages").add(data);
+      } catch(e){
+        alert('আপডেট করতে সমস্যা হয়েছে।');
       }
-      messageInput.value = "";
+      editingMessageId = null;
+      messageInput.value = '';
+      return;
     }
 
-    function sendFile(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const data = {
-          sender: userName,
-          text: `📎 <a href="${evt.target.result}" download="${file.name}">${file.name}</a>`,
-          time: Date.now()
-        };
-        db.collection("messages").add(data);
+    // Compose message data
+    let msgData = {
+      sender: userName,
+      time: firebase.firestore.FieldValue.serverTimestamp(),
+      replyTo: null,
+      type: 'text',
+      text: text,
+      edited: false
+    };
+
+    // If replying
+    if(replyingToMessage){
+      msgData.replyTo = {...replyingToMessage};
+    }
+
+    // If file present
+    if(pendingFile){
+      msgData.type = pendingFile.type;
+      msgData.fileName = pendingFile.name;
+      msgData.fileData = pendingFile.data; // base64 or URL
+      msgData.text = '';
+      pendingFile = null;
+      replyPreview.style.display = 'none';
+      replyingToMessage = null;
+      messageInput.value = '';
+    } else {
+      messageInput.value = '';
+      replyPreview.style.display = 'none';
+      replyingToMessage = null;
+    }
+
+    try {
+      await db.collection('messages').add(msgData);
+    } catch(e){
+      alert('মেসেজ পাঠাতে সমস্যা হয়েছে।');
+    }
+  }
+
+  // Send button click
+  document.querySelector('.sendBtn').onclick = sendMessage;
+
+  // Enter key send
+  messageInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // File sending
+  let pendingFile = null;
+  document.getElementById('fileInput').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if(!file) return;
+
+    // Read file as base64
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      pendingFile = {
+        type: file.type.startsWith('image/') ? 'image' : 'file',
+        name: file.name,
+        data: evt.target.result
       };
-      reader.readAsDataURL(file);
-    }
+      sendMessage();
+    };
+    reader.readAsDataURL(file);
 
-    function showActions(id, msg) {
-      const choice = prompt("Choose: reply / edit / unsend");
-      if (choice === "reply") {
-        replyingTo = msg;
-        replyPreview.style.display = "block";
-        replyPreview.textContent = `Reply to ${msg.sender}: ${msg.text}`;
-      } else if (choice === "edit" && msg.sender === userName) {
-        editingId = id;
-        messageInput.value = msg.text;
-      } else if (choice === "unsend" && msg.sender === userName) {
-        db.collection("messages").doc(id).delete();
-      }
-    }
+    e.target.value = ''; // reset input
+  });
 
-    function startAudioCall() {
-      window.location.href = "audioCall.html?room=chat-app-kamrul";
+  // Typing indicator
+  let typingTimeout;
+  messageInput.addEventListener('input', () => {
+    sendTypingStatus(true);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      sendTypingStatus(false);
+    }, 1500);
+  });
+
+  // Typing status
+  function sendTypingStatus(isTyping){
+    if(!userName) return;
+    rdb.ref('typingStatus/' + userName).set(isTyping);
+  }
+
+  // Show who is typing
+  rdb.ref('typingStatus').on('value', snapshot => {
+    const val = snapshot.val() || {};
+    const typingUsers = Object.keys(val).filter(u => u !== userName && val[u]);
+    if(typingUsers.length > 0){
+      typingIndicator.textContent = typingUsers.join(', ') + ' লিখছে...';
+    } else {
+      typingIndicator.textContent = '';
     }
-    function startVideoCall() {
-      window.location.href = "videoCall.html?room=chat-app-kamrul";
-    }
-  </script></body>
+  });
+
+  // Audio call & video call placeholders
+  function startAudioCall(){
+    alert('অডিও কল ফিচার শীঘ্রই আসবে।');
+  }
+  function startVideoCall(){
+    alert('ভিডিও কল ফিচার শীঘ্রই আসবে।');
+  }
+
+  // Scroll to bottom on load
+  window.onload = () => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  };
+</script>
+</body>
 </html>
