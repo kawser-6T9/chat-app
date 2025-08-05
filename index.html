@@ -48,17 +48,32 @@
     flex-direction: column;
     gap: 10px;
   }
-  .msg {
-    max-width: 80%;
-    padding: 12px 18px;
-    border-radius: 18px;
-    font-size: 15px;
-    word-break: break-word;
-    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
-    position: relative;
-    user-select: none;
-    transition: background-color 0.3s ease;
-  }
+.msg {
+  position: relative;
+  padding: 10px 16px;
+  border-radius: 15px;
+  background: #dcf8c6;
+  max-width: 80%;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.msg .actions {
+  position: absolute;
+  bottom: -28px;
+  right: 0;
+  background: white;
+  display: flex;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: none;
+}
+
+.msg.show-actions .actions {
+  display: flex;
+}
   .msg.me {
     background: #dcf8c6;
     align-self: flex-end;
@@ -293,7 +308,15 @@
   <span></span>
   <button class="clearReplyBtn" title="রিপ্লাই বাতিল করুন">✖</button>
 </div>
-
+<div class="msg me">
+  <div class="name">Kamrul</div>
+  <div class="messageText">Hello!</div>
+  <div class="actions">
+    <button onclick="startReply('messageID')">↩ Reply</button>
+    <button onclick="startEdit('messageID', 'Hello!')">✏ Edit</button>
+    <button onclick="unsendMessage('messageID')">🗑 Unsend</button>
+  </div>
+</div>
 <!-- Input -->
 <div class="input-area">
   <input type="text" id="messageInput" placeholder="মেসেজ লিখুন..." autocomplete="off" />
@@ -393,6 +416,20 @@
     div.textContent = text;
     return div.innerHTML;
   }
+  let longPressTimer = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.msg').forEach(msg => {
+    msg.addEventListener('touchstart', () => {
+      longPressTimer = setTimeout(() => {
+        msg.classList.add('show-actions');
+      }, 1000); // 1 sec
+    });
+    msg.addEventListener('touchend', () => clearTimeout(longPressTimer));
+    msg.addEventListener('touchmove', () => clearTimeout(longPressTimer));
+    msg.addEventListener('mouseleave', () => msg.classList.remove('show-actions'));
+  });
+});
 
   // Append message to UI
   function appendMessage(id, msg){
