@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="bn">
+<!DOCTYPE html><html lang="bn">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>chat-app ©kamrul</title>
   <style>
-    /* Basic resets & layout */
     body, html {
       margin: 0; padding: 0; height: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -26,8 +24,6 @@
     .icons button:hover {
       transform: scale(1.2);
     }
-
-    /* Chat area */
     #chatBox {
       flex: 1; padding: 15px; overflow-y: auto;
       display: flex; flex-direction: column; gap: 10px;
@@ -36,122 +32,64 @@
       border-bottom: 1px solid #ccc;
     }
     .msg {
-      max-width: 80%;
-      padding: 10px 16px;
-      border-radius: 15px;
-      font-size: 15px;
-      position: relative;
-      word-wrap: break-word;
+      max-width: 80%; padding: 10px 16px;
+      border-radius: 15px; font-size: 15px;
+      position: relative; word-wrap: break-word;
       box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
-      user-select: none;
     }
     .msg.me {
-      background: #dcf8c6;
-      align-self: flex-end;
+      background: #dcf8c6; align-self: flex-end;
     }
     .msg.other {
-      background: #fff;
-      border: 1px solid #ccc;
-      align-self: flex-start;
+      background: #fff; border: 1px solid #ccc; align-self: flex-start;
     }
     .name {
-      font-weight: 700;
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 4px;
+      font-weight: 700; font-size: 13px; color: #555; margin-bottom: 4px;
     }
     .replyBox {
-      font-size: 13px;
-      color: #555;
+      font-size: 13px; color: #555;
       border-left: 3px solid #2f80ed;
-      padding-left: 8px;
-      margin-bottom: 5px;
-      cursor: pointer;
+      padding-left: 8px; margin-bottom: 5px; cursor: pointer;
     }
-    /* Message actions menu */
     .actions {
-      position: absolute;
-      bottom: -22px;
-      right: 10px;
-      display: flex;
-      gap: 6px;
-      font-size: 13px;
-      color: #666;
-      opacity: 0;
-      pointer-events: none;
-      user-select: none;
+      position: absolute; bottom: -22px; right: 10px;
+      display: flex; gap: 6px;
+      font-size: 13px; color: #666;
+      opacity: 0; pointer-events: none;
       transition: opacity 0.2s ease;
     }
-    .msg.me:hover .actions,
-    .msg.other:hover .actions {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .msg:hover .actions { opacity: 1; pointer-events: auto; }
     .actions button {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 2px 5px;
-      border-radius: 4px;
+      background: transparent; border: none; cursor: pointer;
+      padding: 2px 5px; border-radius: 4px;
       transition: background-color 0.2s ease;
     }
     .actions button:hover {
-      background-color: #2f80ed;
-      color: white;
+      background-color: #2f80ed; color: white;
     }
-
-    /* Input area */
     .input-area {
-      display: flex;
-      padding: 10px 15px;
-      gap: 8px;
-      background: #fff;
-      align-items: center;
+      display: flex; padding: 10px 15px; gap: 8px;
+      background: #fff; align-items: center;
       border-top: 1px solid #ccc;
     }
     .input-area input[type="text"] {
-      flex: 1;
-      padding: 12px 15px;
-      font-size: 15px;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-      outline: none;
-      transition: border-color 0.3s ease;
-    }
-    .input-area input[type="text"]:focus {
-      border-color: #2f80ed;
+      flex: 1; padding: 12px 15px; font-size: 15px;
+      border-radius: 20px; border: 1px solid #ccc;
     }
     .input-area button.sendBtn {
-      background: #2f80ed;
-      color: white;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 15px;
-      transition: background-color 0.3s ease;
+      background: #2f80ed; color: white;
+      border: none; padding: 12px 18px;
+      border-radius: 20px; cursor: pointer;
+      font-weight: 600; font-size: 15px;
     }
     .input-area button.sendBtn:hover {
       background: #1c5ecb;
     }
-    /* File input hidden */
-    #fileInput {
-      display: none;
-    }
-    /* File send button next to input */
+    #fileInput { display: none; }
     .file-label {
-      cursor: pointer;
-      font-size: 22px;
-      color: #555;
-      user-select: none;
-      transition: color 0.3s ease;
+      cursor: pointer; font-size: 22px; color: #555;
     }
-    .file-label:hover {
-      color: #2f80ed;
-    }
-
-    /* Name modal */
+    .file-label:hover { color: #2f80ed; }
     #nameModal {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.7);
@@ -159,93 +97,50 @@
       z-index: 1000;
     }
     #nameModalBox {
-      background: white;
-      padding: 30px 20px;
-      border-radius: 10px;
-      max-width: 320px;
-      width: 90%;
+      background: white; padding: 30px 20px;
+      border-radius: 10px; max-width: 320px; width: 90%;
       text-align: center;
-      box-shadow: 0 4px 15px rgb(0 0 0 / 0.2);
     }
     #nameModalBox input {
-      width: 100%;
-      padding: 12px 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-top: 15px;
-      outline: none;
-      transition: border-color 0.3s ease;
-    }
-    #nameModalBox input:focus {
-      border-color: #2f80ed;
+      width: 100%; padding: 12px 12px;
+      font-size: 16px; border-radius: 6px;
+      border: 1px solid #ccc; margin-top: 12px;
     }
     #nameModalBox button {
-      margin-top: 18px;
-      background: #2f80ed;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
+      margin-top: 18px; background: #2f80ed; color: white;
+      border: none; padding: 12px 20px;
+      font-size: 16px; border-radius: 6px;
+      cursor: pointer; font-weight: 600;
     }
-    #nameModalBox button:hover {
-      background: #1c5ecb;
-    }
-
-    /* Reply display input */
     #replyPreview {
       background: #e3f2fd;
       border-left: 4px solid #2f80ed;
-      padding: 6px 12px;
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: #2f80ed;
-      cursor: pointer;
-      display: none;
-      user-select: none;
-    }
-    #replyPreview span {
-      font-weight: 600;
+      padding: 6px 12px; margin-bottom: 8px;
+      font-size: 14px; color: #2f80ed; display: none;
     }
     .call-msg {
-  background: #e0f7fa;
-  padding: 10px;
-  border: 1px solid #00acc1;
-  border-radius: 5px;
-  text-align: center;
-  margin: 10px;
-  font-family: sans-serif;
-}
-
-.call-msg button {
-  margin: 5px;
-  padding: 5px 10px;
-  background: #00acc1;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
+      background: #e0f7fa; padding: 10px;
+      border: 1px solid #00acc1; border-radius: 5px;
+      text-align: center; margin: 10px;
+    }
+    .call-msg button {
+      margin: 5px; padding: 5px 10px;
+      background: #00acc1; color: white;
+      border: none; border-radius: 3px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div id="call-banner"></div>
-
-  <!-- Name input modal -->
   <div id="nameModal">
     <div id="nameModalBox">
-      <h2>তোমার নাম লিখো</h2>
+      <h2>তোমার নাম ও পাসওয়ার্ড লিখো</h2>
       <input type="text" id="nameInput" placeholder="তোমার নাম" autocomplete="off" />
+      <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড (ex: chat-app)" autocomplete="off" />
       <button onclick="saveName()">Join Chat</button>
     </div>
   </div>
-
-  <!-- Header -->
   <header>
     chat-app ©kamrul
     <div class="icons">
@@ -255,303 +150,38 @@
       <input type="file" id="fileInput" accept="*/*" onchange="sendFile(event)" />
     </div>
   </header>
-
-  <!-- Chat messages container -->
   <div id="chatBox"></div>
-
-  <!-- Reply preview -->
   <div id="replyPreview" onclick="clearReply()"></div>
-
-  <!-- Input area -->
   <div class="input-area">
     <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." autocomplete="off" />
     <button class="sendBtn" onclick="sendMessage()">Send</button>
   </div>
-
-  <!-- Sounds -->
   <audio id="notifSound" src="assets/notification.mp3"></audio>
   <audio id="ringtone" src="assets/ringtone.mp3" loop></audio>
-
   <!-- Firebase scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
-      authDomain: "chat-app-62f68.firebaseapp.com",
-      projectId: "chat-app-62f68",
-      storageBucket: "chat-app-62f68",
-      messagingSenderId: "887562025936",
-      appId: "1:887562025936:web:4846398f3764deda86d7d5"
-    };
+    const firebaseConfig = { /* your firebase config */ };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
-    const notifSound = document.getElementById("notifSound");
-    const ringtone = document.getElementById("ringtone");
-    const nameModal = document.getElementById("nameModal");
-    const replyPreview = document.getElementById("replyPreview");
-
     let userName = localStorage.getItem("fdUser");
-    if (!userName) {
-      nameModal.style.display = "flex";
-    }
-
-    // To keep track of editing or replying
-    let editingMessageId = null;
-    let replyingToMessage = null;
-
-    function saveName() {
-      const input = document.getElementById("nameInput").value.trim();
-      if (!input) return alert("দয়া করে নাম লিখুন");
-      userName = input;
-      localStorage.setItem("fdUser", userName);
-      nameModal.style.display = "none";
-      subscribeMessages();
-    }
-    function startVideoCall(username) {
-  const room = "call-" + username + "-" + Date.now();
-  firebase.database().ref("activeCall").set({
-    type: "video",
-    from: username,
-    room: room,
-    active: true
-  });
-  window.location.href = `videoCall.html?room=${room}`;
-    }
-    
-firebase.database().ref("activeCall").on("value", (snap) => {
-  const data = snap.val();
-  if (data && data.active) {
-    showCallBanner(data.from, data.type, data.room);
-  }
-});
-
-    // Subscribe to Firestore messages realtime updates
-    function subscribeMessages() {
-      db.collection("messages").orderBy("time").onSnapshot(snapshot => {
-        chatBox.innerHTML = "";
-        snapshot.forEach(doc => {
-          const msg = doc.data();
-          const id = doc.id;
-          appendMessage(id, msg);
-        });
-        chatBox.scrollTop = chatBox.scrollHeight;
-      });
-    }
-
-    // Append a single message to chatBox
-    function appendMessage(id, msg) {
-      const div = document.createElement("div");
-      const isMe = msg.sender === userName;
-      div.className = `msg ${isMe ? "me" : "other"}`;
-
-      // Reply preview inside message
-      let replyHTML = "";
-      if (msg.replyTo) {
-        replyHTML = `<div class="replyBox" onclick="scrollToMessage('${msg.replyTo.id}')">
-          <b>${msg.replyTo.sender}:</b> ${msg.replyTo.text.length > 40 ? msg.replyTo.text.slice(0,40) + "..." : msg.replyTo.text}
-        </div>`;
-      }
-
-      // message text
-      const messageText = msg.text.includes("<a ") ? msg.text : escapeHTML(msg.text);
-
-      div.innerHTML = `
-        <div class="name">${escapeHTML(msg.sender)}</div>
-        ${replyHTML}
-        <div class="messageText">${messageText}</div>
-      `;
-
-      // Actions: only for my messages (edit, unsend) and reply for all
-      const actionsDiv = document.createElement("div");
-      actionsDiv.className = "actions";
-
-      // Reply (all can reply)
-      const replyBtn = document.createElement("button");
-      replyBtn.title = "Reply";
-      replyBtn.textContent = "↩";
-      replyBtn.onclick = () => startReply(id, msg);
-      actionsDiv.appendChild(replyBtn);
-
-      if (isMe) {
-        // Edit button
-        const editBtn = document.createElement("button");
-        editBtn.title = "Edit";
-        editBtn.textContent = "✏️";
-        editBtn.onclick = () => startEdit(id, msg.text);
-        actionsDiv.appendChild(editBtn);
-
-        // Unsend button
-        const unsendBtn = document.createElement("button");
-        unsendBtn.title = "Unsend";
-        unsendBtn.textContent = "🗑️";
-        unsendBtn.onclick = () => unsendMessage(id);
-        actionsDiv.appendChild(unsendBtn);
-
-        // Remove for me button
-        const removeForMeBtn = document.createElement("button");
-        removeForMeBtn.title = "Remove For Me";
-        removeForMeBtn.textContent = "❌";
-        removeForMeBtn.onclick = () => removeForMe(id);
-        actionsDiv.appendChild(removeForMeBtn);
-      }
-
-      div.appendChild(actionsDiv);
-      chatBox.appendChild(div);
-
-      // Play notification sound only if not sender
-      if (!isMe) notifSound.play();
-    }
-
-    // Escape HTML to prevent injection
-    function escapeHTML(text) {
-      var div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    // Scroll to a message by id (for reply preview click)
-    function scrollToMessage(id) {
-      const messages = chatBox.querySelectorAll(".msg");
-      for (const msg of messages) {
-        if (msg.textContent.includes(id)) {
-          msg.scrollIntoView({behavior: "smooth", block: "center"});
-          break;
-        }
-      }
-    }
-
-    // Start editing a message
-    function startEdit(id, oldText) {
-      editingMessageId = id;
-      messageInput.value = oldText;
-      messageInput.focus();
-    }
-
-    // Start reply
-    function startReply(id, msg) {
-      replyingToMessage = { id, sender: msg.sender, text: msg.text };
-      replyPreview.style.display = "block";
-      replyPreview.innerHTML = `<span>Reply to <b>${escapeHTML(msg.sender)}</b>: ${escapeHTML(msg.text.length > 50 ? msg.text.slice(0, 50) + "..." : msg.text)}</span> <button onclick="clearReply()" style="margin-left: 8px; cursor: pointer;">✖</button>`;
+    const nameModal = document.getElementById("nameModal");function saveName() {
+  const input = document.getElementById("nameInput").value.trim();
+  const pass = document.getElementById("passwordInput").value.trim();
+  if (!input || !pass) return alert("নাম ও পাসওয়ার্ড দিন");
+  if (pass !== "skamu") return alert("ভুল পাসওয়ার্ড!");
+  userName = input;
+  localStorage.setItem("fdUser", userName);
+  nameModal.style.display = "none";
+  subscribeMessages();
 }
-
-// Clear reply preview
-function clearReply() {
-  replyingToMessage = null;
-  replyPreview.style.display = "none";
-  replyPreview.innerHTML = "";
-}
-
-// Send message (new or edit)
-function sendMessage() {
-  const text = messageInput.value.trim();
-  if (!text) return;
-
-  if (editingMessageId) {
-    // Update existing message
-    db.collection("messages").doc(editingMessageId).update({
-      text,
-      edited: true,
-      time: Date.now()
-    });
-    editingMessageId = null;
-  } else {
-    // Add new message
-    const msgObj = {
-      sender: userName,
-      text,
-      time: Date.now(),
-    };
-    if (replyingToMessage) {
-      msgObj.replyTo = replyingToMessage;
-    }
-    db.collection("messages").add(msgObj);
-  }
-
-  messageInput.value = "";
-  clearReply();
-}
-
-// Unsend message (delete for everyone)
-function unsendMessage(id) {
-  if (confirm("Are you sure you want to unsend this message for everyone?")) {
-    db.collection("messages").doc(id).delete();
-  }
-}
-
-// Remove message only from your view (simulate by flagging)
-function removeForMe(id) {
-  // Here we can implement client-side hiding or
-  // add a 'removedFor' array in the message document to track who removed it
-  // For simplicity, just hide from DOM for now
-  // Real solution requires user-specific filtering in query
-
-  // Remove message div from UI
-  // Note: This only hides for current user session, not persistent
-  const msgs = document.querySelectorAll(".msg");
-  msgs.forEach(msg => {
-    if(msg.dataset.id === id) msg.style.display = "none";
-  });
-  alert("This message is removed from your view only.");
-}
-
-// File sending
-function sendFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const fileName = file.name;
-    const fileData = evt.target.result;
-    const msgObj = {
-      sender: userName,
-      text: `📎 <a href="${fileData}" download="${fileName}">${fileName}</a>`,
-      type: "file",
-      time: Date.now(),
-    };
-    if (replyingToMessage) {
-      msgObj.replyTo = replyingToMessage;
-    }
-    db.collection("messages").add(msgObj);
-  }
-  reader.readAsDataURL(file);
-  e.target.value = ""; // reset input
-}
-// Start audio call
-function startAudioCall() {
-  window.location.href = `audioCall.html?room=chat-app-kamrul`;
-}
-
-// Start video call
-function startVideoCall() {
-  window.location.href = `videoCall.html?room=chat-app-kamrul`;
-}
-function showCallBanner(from, type, room) {
-  document.getElementById("call-banner").innerHTML = `
-    <div class="call-msg">
-      📞 from{type === 'video' ? 'ভিডিও' : 'অডিও'} কল শুরু করেছেন।<br/>
-      <button onclick="joinCall('${room}')">জয়েন করুন</button>
-      <button onclick="cancelCall()">ক্যান্সেল</button>
-    </div>
-  `;
-}
-    
-firebase.database().ref("activeCall").on("value", (snap) => {
-  const data = snap.val();
-  if (data && data.active) {
-    showCallBanner(data.from, data.type, data.room);
-  } else {document.getElementById("call-banner").innerHTML = ""; // হাইড
-  }
-});
-// Start the app if name already saved
 if (userName) {
   nameModal.style.display = "none";
   subscribeMessages();
 }
+// Continue with the rest of your script (sendMessage, appendMessage etc...)
+
   </script>
 </body>
 </html>
