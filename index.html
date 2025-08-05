@@ -1,195 +1,277 @@
-<!DOCTYPE html><html lang="bn">
+<!DOCTYPE html>
+<html lang="bn">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>chat-app ©kamrul</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body, html {
       margin: 0; padding: 0; height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f5f7;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f0f2f5;
       display: flex; flex-direction: column;
     }
     header {
-      background: #2f80ed; color: white;
+      background: #4a90e2;
+      color: white;
       padding: 14px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 20px; font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 20px;
+      font-weight: 600;
     }
-    .icons button {
-      background: transparent; border: none; color: white;
-      font-size: 24px; margin-left: 14px; cursor: pointer;
+    .icons button, .file-label {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      margin-left: 14px;
+      color: white;
+      cursor: pointer;
       transition: transform 0.2s ease;
     }
-    .icons button:hover {
+    .icons button:hover, .file-label:hover {
       transform: scale(1.2);
     }
     #chatBox {
-      flex: 1; padding: 15px; overflow-y: auto;
-      display: flex; flex-direction: column; gap: 10px;
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
       background: #fff;
-      border-top: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .msg {
-      max-width: 80%; padding: 10px 16px;
-      border-radius: 15px; font-size: 15px;
-      position: relative; word-wrap: break-word;
-      box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      position: relative;
+      word-wrap: break-word;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .msg.me {
-      background: #dcf8c6; align-self: flex-end;
+      background: #dcf8c6;
+      align-self: flex-end;
     }
     .msg.other {
-      background: #fff; border: 1px solid #ccc; align-self: flex-start;
+      background: #f1f1f1;
+      align-self: flex-start;
     }
     .name {
-      font-weight: 700; font-size: 13px; color: #555; margin-bottom: 4px;
-    }
-    .replyBox {
-      font-size: 13px; color: #555;
-      border-left: 3px solid #2f80ed;
-      padding-left: 8px; margin-bottom: 5px; cursor: pointer;
+      font-weight: bold;
+      font-size: 13px;
+      color: #444;
+      margin-bottom: 4px;
     }
     .actions {
-      position: absolute; bottom: -22px; right: 10px;
-      display: flex; gap: 6px;
-      font-size: 13px; color: #666;
-      opacity: 0; pointer-events: none;
+      position: absolute;
+      bottom: -20px;
+      right: 10px;
+      display: flex;
+      gap: 6px;
+      font-size: 13px;
+      color: #666;
+      opacity: 0;
+      pointer-events: none;
       transition: opacity 0.2s ease;
     }
-    .msg:hover .actions { opacity: 1; pointer-events: auto; }
-    .actions button {
-      background: transparent; border: none; cursor: pointer;
-      padding: 2px 5px; border-radius: 4px;
-      transition: background-color 0.2s ease;
+    .msg:hover .actions {
+      opacity: 1;
+      pointer-events: auto;
     }
-    .actions button:hover {
-      background-color: #2f80ed; color: white;
+    .actions button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 2px 4px;
     }
     .input-area {
-      display: flex; padding: 10px 15px; gap: 8px;
-      background: #fff; align-items: center;
+      display: flex;
+      padding: 10px 15px;
+      background: #fff;
       border-top: 1px solid #ccc;
     }
     .input-area input[type="text"] {
-      flex: 1; padding: 12px 15px; font-size: 15px;
-      border-radius: 20px; border: 1px solid #ccc;
+      flex: 1;
+      padding: 12px 15px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 15px;
     }
     .input-area button.sendBtn {
-      background: #2f80ed; color: white;
-      border: none; padding: 12px 18px;
-      border-radius: 20px; cursor: pointer;
-      font-weight: 600; font-size: 15px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-left: 8px;
+      cursor: pointer;
     }
-    .input-area button.sendBtn:hover {
-      background: #1c5ecb;
-    }
-    #fileInput { display: none; }
-    .file-label {
-      cursor: pointer; font-size: 22px; color: #555;
-    }
-    .file-label:hover { color: #2f80ed; }
     #nameModal {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.6);
       display: flex; justify-content: center; align-items: center;
-      z-index: 1000;
+      z-index: 999;
     }
     #nameModalBox {
-      background: white; padding: 30px 20px;
-      border-radius: 10px; max-width: 320px; width: 90%;
+      background: white;
+      padding: 30px 20px;
+      border-radius: 12px;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       text-align: center;
     }
     #nameModalBox input {
-      width: 100%; padding: 12px 12px;
-      font-size: 16px; border-radius: 6px;
-      border: 1px solid #ccc; margin-top: 12px;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     #nameModalBox button {
-      margin-top: 18px; background: #2f80ed; color: white;
-      border: none; padding: 12px 20px;
-      font-size: 16px; border-radius: 6px;
-      cursor: pointer; font-weight: 600;
-    }
-    #replyPreview {
-      background: #e3f2fd;
-      border-left: 4px solid #2f80ed;
-      padding: 6px 12px; margin-bottom: 8px;
-      font-size: 14px; color: #2f80ed; display: none;
-    }
-    .call-msg {
-      background: #e0f7fa; padding: 10px;
-      border: 1px solid #00acc1; border-radius: 5px;
-      text-align: center; margin: 10px;
-    }
-    .call-msg button {
-      margin: 5px; padding: 5px 10px;
-      background: #00acc1; color: white;
-      border: none; border-radius: 3px;
+      margin-top: 15px;
+      background: #4a90e2;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div id="call-banner"></div>
+
   <div id="nameModal">
     <div id="nameModalBox">
-      <h2>তোমার নাম ও পাসওয়ার্ড লিখো</h2>
-      <input type="text" id="nameInput" placeholder="তোমার নাম" autocomplete="on" />
-      <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড (ex: chat-app)" autocomplete="off" />
-      <button onclick="saveName()">Join Chat</button>
+      <h2>তোমার নাম লিখো</h2>
+      <input type="text" id="nameInput" placeholder="তোমার নাম" />
+      <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড দিন" />
+      <button onclick="checkPassword()">Join Chat</button>
     </div>
   </div>
+
   <header>
     chat-app ©kamrul
     <div class="icons">
-      <button title="Audio Call" onclick="startAudioCall()">📞</button>
-      <button title="Video Call" onclick="startVideoCall()">📷</button>
-      <label for="fileInput" class="file-label" title="Send File">📎</label>
-      <input type="file" id="fileInput" accept="*/*" onchange="sendFile(event)" />
+      <button onclick="startAudioCall()">📞</button>
+      <button onclick="startVideoCall()">📷</button>
+      <label for="fileInput" class="file-label">📎</label>
+      <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)" />
     </div>
   </header>
+
   <div id="chatBox"></div>
-  <div id="replyPreview" onclick="clearReply()"></div>
+
   <div class="input-area">
-    <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." autocomplete="off" />
+    <input type="text" id="messageInput" placeholder="মেসেজ লিখো..." />
     <button class="sendBtn" onclick="sendMessage()">Send</button>
   </div>
-  <audio id="notifSound" src="assets/notification.mp3"></audio>
-  <audio id="ringtone" src="assets/ringtone.mp3" loop></audio>
-  <!-- Firebase scripts -->
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
   <script>
-    const firebaseConfig = { /* your firebase config */ };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAemPZqI87bw7S3v4Wn0VOpHzmCCVP1MqU",
+      authDomain: "chat-app-62f68.firebaseapp.com",
+      projectId: "chat-app-62f68",
+      storageBucket: "chat-app-62f68",
+      messagingSenderId: "887562025936",
+      appId: "1:887562025936:web:4846398f3764deda86d7d5"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    const nameModal = document.getElementById("nameModal");
     let userName = localStorage.getItem("fdUser");
-    const nameModal = document.getElementById("nameModal");function saveName() {
-  function saveName() {
-  const inputEl = document.getElementById("nameInput");
-  const passEl = document.getElementById("passwordInput");
-  const name = inputEl.value.trim();
-  const password = passEl.value.trim();
 
-  if (password !== "sk") {
-    alert("ভুল পাসওয়ার্ড!");
-    return;
-  }
-
-  if (!name) {
-    alert("দয়া করে নাম দিন");
-    return;
-  }
-
-  userName = name;
-  localStorage.setItem("fdUser", userName);
-  nameModal.style.display = "none";
-  subscribeMessages();
+    if (!userName) {
+      nameModal.style.display = "flex";
+    } else {
+      nameModal.style.display = "none";
+      subscribeMessages();
     }
-// Continue with the rest of your script (sendMessage, appendMessage etc...)
 
+    function checkPassword() {
+      const name = document.getElementById("nameInput").value.trim();
+      const pass = document.getElementById("passwordInput").value;
+      if (pass !== "ks") {
+        alert("❌ ভুল পাসওয়ার্ড!");
+        return;
+      }
+      if (!name) {
+        alert("নাম দিন");
+        return;
+      }
+      userName = name;
+      localStorage.setItem("fdUser", userName);
+      nameModal.style.display = "none";
+      subscribeMessages();
+    }
+
+    function subscribeMessages() {
+      db.collection("messages").orderBy("time").onSnapshot(snapshot => {
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = "";
+        snapshot.forEach(doc => {
+          const msg = doc.data();
+          const div = document.createElement("div");
+          div.className = `msg ${msg.sender === userName ? "me" : "other"}`;
+          div.innerHTML = `
+            <div class="name">${msg.sender}</div>
+            <div>${msg.text}</div>
+          `;
+          chatBox.appendChild(div);
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+    }
+
+    function sendMessage() {
+      const messageInput = document.getElementById("messageInput");
+      const text = messageInput.value.trim();
+      if (!text) return;
+      db.collection("messages").add({
+        sender: userName,
+        text,
+        time: Date.now()
+      });
+      messageInput.value = "";
+    }
+
+    function sendFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const fileData = evt.target.result;
+        db.collection("messages").add({
+          sender: userName,
+          text: `📎 <a href="${fileData}" download="${file.name}">${file.name}</a>`,
+          time: Date.now()
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function startAudioCall() {
+      window.location.href = "audioCall.html?room=chat-app-kamrul";
+    }
+
+    function startVideoCall() {
+      window.location.href = "videoCall.html?room=chat-app-kamrul";
+    }
   </script>
 </body>
 </html>
