@@ -136,7 +136,7 @@
   <div id="nameModal">
     <div id="nameModalBox">
       <h2>তোমার নাম ও পাসওয়ার্ড লিখো</h2>
-      <input type="text" id="nameInput" placeholder="তোমার নাম" autocomplete="off" />
+      <input type="text" id="nameInput" placeholder="তোমার নাম" autocomplete="on" />
       <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড (ex: chat-app)" autocomplete="off" />
       <button onclick="saveName()">Join Chat</button>
     </div>
@@ -170,7 +170,7 @@
   const input = document.getElementById("nameInput").value.trim();
   const pass = document.getElementById("passwordInput").value.trim();
   if (!input || !pass) return alert("নাম ও পাসওয়ার্ড দিন");
-  if (pass !== "skamu") return alert("ভুল পাসওয়ার্ড!");
+  if (pass !== "ks") return alert("ভুল পাসওয়ার্ড!");
   userName = input;
   localStorage.setItem("fdUser", userName);
   nameModal.style.display = "none";
