@@ -520,11 +520,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set selected msg info
     selectedMsgDiv = msgDiv;
     const isMe = msgDiv.classList.contains('me');
+    const rect = msgDiv.getBoundingClientRect(); // ✅ Add this line
 
-// Position menu above message horizontally centered
-    menu.style.top = (window.scrollY + rect.top - 50) + 'px';
-    // Center horizontally relative to message
-    menu.style.left = (window.scrollX + rect.left + rect.width/2 - menu.offsetWidth/2) + 'px';
+    // Position menu above message horizontally centered
+    msgActionMenu.style.top = (window.scrollY + rect.top - 50) + 'px';
+    msgActionMenu.style.left = (window.scrollX + rect.left + rect.width/2 - msgActionMenu.offsetWidth/2) + 'px';
 
     // Show/hide buttons based on ownership
     if(isMe){
@@ -532,6 +532,13 @@ document.addEventListener('DOMContentLoaded', () => {
       editBtn.style.display = 'inline-block';
       unsendBtn.style.display = 'inline-block';
     } else {
+      replyBtn.style.display = 'inline-block';
+      editBtn.style.display = 'none';
+      unsendBtn.style.display = 'none';
+    }
+
+    msgActionMenu.style.display = 'flex'; // ✅ Show menu
+  } else {
       replyBtn.style.display = 'inline-block';
       editBtn.style.display = 'none';
       unsendBtn.style.display = 'none';
@@ -822,11 +829,11 @@ sage to UI
     // Set selected msg info
     selectedMsgDiv = msgDiv;
     const isMe = msgDiv.classList.contains('me');
+    const rect = msgDiv.getBoundingClientRect(); // ✅ Add this line
 
-// Position menu above message horizontally centered
-    menu.style.top = (window.scrollY + rect.top - 50) + 'px';
-    // Center horizontally relative to message
-    menu.style.left = (window.scrollX + rect.left + rect.width/2 - menu.offsetWidth/2) + 'px';
+    // Position menu above message horizontally centered
+    msgActionMenu.style.top = (window.scrollY + rect.top - 50) + 'px';
+    msgActionMenu.style.left = (window.scrollX + rect.left + rect.width/2 - msgActionMenu.offsetWidth/2) + 'px';
 
     // Show/hide buttons based on ownership
     if(isMe){
@@ -834,6 +841,13 @@ sage to UI
       editBtn.style.display = 'inline-block';
       unsendBtn.style.display = 'inline-block';
     } else {
+      replyBtn.style.display = 'inline-block';
+      editBtn.style.display = 'none';
+      unsendBtn.style.display = 'none';
+    }
+
+    msgActionMenu.style.display = 'flex'; // ✅ Show menu
+  } else {
       replyBtn.style.display = 'inline-block';
       editBtn.style.display = 'none';
       unsendBtn.style.display = 'none';
